@@ -1,7 +1,14 @@
 %% Fibra variando a temperatura - referencia Tripathi-2009
-% Temperaturas buscadas : 0, 5, 10 e 24(já calculado)
+% Temperaturas buscadas : 0, 5, 10 e 24(ja calculado)
 % Definir o b(raio do nucleo) e o indice de refracao GRIN.
-% 23-04 -Não sei definir o r e encontrar o n pela derivada sobre a temperatura.
+% 23-04 -email fibra-temp responde sobre b,n e t.
+
+% Ideia seria: definir uma nova funcao para calculo do indice de refracao(ntemp) e
+% apartir dae configurar o que for necessario.
+% Preciso definir o b antes de calcular o n0 e calcular o ntemp
+% Por este link: https://br.comsol.com/community/forums/general/thread/34208/
+% Diz que devo calcular a expressao primeiramente e depois pegar o valor e
+% recalcular!! Criar tudo pelo matlab mesmo.
 
 clear all
 clc
@@ -60,8 +67,7 @@ b0 = 30e-6;
 t0 = 24;
 r0 = 4e-2;
 
-%r(T ) = r 0 + alphar a0 (T − T 0 )
-%b(T ) = b 0 + alpha b0 (T − T 0 )
+
 temperaturas = [0,5,15];
 
 
@@ -69,10 +75,9 @@ temperaturas = [0,5,15];
 
 for temp = 0:limite
     
-    r(temperaturas(temp)) = r0 + alpha* r0 (temperatura(temp) - t0); 
+    
     
     b(temperaturas(temp)) = b0 + alpha * b0 (temperatura(temp) - t0);
-    
     
     
     model.param.set('b', b);
