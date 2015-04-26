@@ -10,6 +10,13 @@
 % Diz que devo calcular a expressao primeiramente e depois pegar o valor e
 % recalcular!! Criar tudo pelo matlab mesmo.
 
+%25-04 - Primeira tentativa, coloquei uma nova funcao no modelo do COMSOL,
+%chamada n_temp.
+%Dados que preciso pegar e salvar num arquivo apos a alteracao de cada temperatura: betas, neff,
+%temperatura
+
+%Consigo pegar os dados com esta versao, chamada de fibra_var_temp_2.
+
 clear all
 clc
 close all
@@ -42,6 +49,7 @@ fid=fopen(filename1,'wt');
 %%fprintf(fid,'neff7\t');
 %%fprintf(fid,'beta\n');
 
+fprintf(fid,'temperatura\t');
 fprintf(fid,'neff\t');
 fprintf(fid,'beta\n');
 
@@ -58,9 +66,9 @@ disp('Gerando a geometria.')
     disp('Gerando o mesh.')
  model.mesh('mesh1').run;
  
-h = waitbar(0,'Calculando modos COMSOL');
 
-limite = 3;
+
+
 %constante de interesse:
 alpha = 5e-5;
 b0 = 30e-6;
@@ -68,24 +76,10 @@ t0 = 24;
 r0 = 4e-2;
 
 
-temperaturas = [0,5,15];
-
 
 %% Calculo dos modos na fibra monomodo
 
-for temp = 0:limite
-    
-    
-    
-    b(temperaturas(temp)) = b0 + alpha * b0 (temperatura(temp) - t0);
-    
-    
-    model.param.set('b', b);
-    
-    
-    
-    
-    
+
     model.sol('sol1').run() %Computa study1
     
     
@@ -95,8 +89,7 @@ for temp = 0:limite
     %neff2 = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',6);
     %neff3 = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',3);
    
-   disp('Espacamento:')
-   m
+   
    disp('Indice efetivo da fibra monomodo.') 
    neff1 
     
@@ -121,7 +114,7 @@ for temp = 0:limite
    neff1
    
    disp('Exportando o campo eletrico da fibra monomodo.')
-    variandoSMF = strcat('E1grid_delta_',num2str(m),'.csv');
+    variandoSMF = strcat('E1grid_delta.csv');
     titulo1 = fullfile(caminho,variandoSMF);
         
     model.result.export('data1').set('data', 'dset1');
@@ -141,16 +134,34 @@ for temp = 0:limite
     disp('Exportando o campo eletrico sem grid.')
     %removendo as 4 primeiras linhas do arquivo
     E1delta = csvread(variandoSMF,4,0); 
-    SMFsemgrid = strcat('E1delta_',num2str(m),'.csv');
+    SMFsemgrid = strcat('E1delta.csv');
     csvwrite(SMFsemgrid,E1delta)
    
     
-       waitbar(m/limite)
-end
-close(h)
+       %waitbar(m/limite)
+
+%close(h)
 
 %% Calculo dos modos da fibra Ge
+%Como a temperatura so altera o indice da GRIN, entao a SMF ja esta
+%resolvida.
 
+temperaturas = [0,5,15,24];
+limite = length(temperaturas);
+
+for temp = 1:limite
+    disp([' temp = ',num2str(temperaturas(temp))]);
+     model.param.set('t', temperaturas(temp));
+    
+    b = b0 + alpha * b0 * (temperaturas(temp) - t0);
+    
+    
+    model.param.set('b', b);
+    disp('Gerando a geometria para novo raio da GRIN.')
+ model.geom('geom1').run;
+ 
+    disp('Gerando o mesh para novo raio da GRIN.')
+ model.mesh('mesh1').run;
 model.sol('sol2').run() %Computa study2
 
 %Estes modos nao dependem de m, pois apenas a fibra monomodo se
@@ -270,23 +281,29 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
    %% fprintf(fid,[num2str(neff5),' , ']);
    %% fprintf(fid,[num2str(neff6),' \n']);
 
+    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
     fprintf(fid,[num2str(neff1),' , ']);
     fprintf(fid,[num2str(Ebeta1),' \n']);
+    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
     fprintf(fid,[num2str(neff2),' , ']);
     fprintf(fid,[num2str(Ebeta2),' \n']);
+    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
     fprintf(fid,[num2str(neff3),' , ']);
     fprintf(fid,[num2str(Ebeta3),' \n']);
+    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
     fprintf(fid,[num2str(neff4),' , ']);
     fprintf(fid,[num2str(Ebeta4),' \n']);
+    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
     fprintf(fid,[num2str(neff5),' , ']);
     fprintf(fid,[num2str(Ebeta5),' \n']);
+    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
     fprintf(fid,[num2str(neff6),' , ']);
-    fprintf(fid,[num2str(Ebeta6),' \n']);
+    fprintf(fid,[num2str(Ebeta6),' \n\n']);
 
 
    
     disp('Os modos obtidos sao:')    
-    disp([' m ',num2str(m),' neff1 ',num2str(neff1),...
+    disp([' temp ',num2str(temperaturas(temp)),' neff1 ',num2str(neff1),...
     ' neff2 ',num2str(neff2),' neff3 ',num2str(neff3),...
     ' neff4 ',num2str(neff4),' neff5 ',num2str(neff5),...
     ' neff6 ',num2str(neff6)])
@@ -298,7 +315,7 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
     %i=1;
     for i = 1:5
         
-    variando2 = strcat('MMF',num2str(i),'.csv');
+    variando2 = strcat('MMF',num2str(i),'_temp_',num2str(temperaturas(temp)),'.csv');
     titulo2 = fullfile(caminho,variando2);
    
     model.result.export('data2').set('data', 'dset2');
@@ -321,7 +338,7 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
      
     end
     
-    
+end
 
 fclose(fid);
 disp('Calculo encerrado.')

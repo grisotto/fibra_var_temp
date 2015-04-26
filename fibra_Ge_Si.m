@@ -2,14 +2,14 @@ function out = model
 %
 % fibra_Ge_Si.m
 %
-% Model exported on Apr 24 2015, 16:08 by COMSOL 4.3.2.152.
+% Model exported on Apr 26 2015, 17:05 by COMSOL 4.3.2.152.
 
 import com.comsol.model.*
 import com.comsol.model.util.*
 
 model = ModelUtil.create('Model');
 
-model.modelPath('C:\Users\Rafael\Documents\GitHub\fibra_var_temp');
+model.modelPath('/mnt/dados/Comp/Projeto_optics/novafiber/abril2015/temperatura');
 
 model.name('fibra_Ge_Si.mph');
 
@@ -279,5 +279,222 @@ model.result.export('data3').set('gridy2', 'range(-60,5,-45) range(-44,1,-41) ra
 model.result.export('data3').set('filename', '/Users/paulogomestl/Documents/Dropbox/Profissional/Jatai/2015/pesquisas/Simulacao/Grisoto/01janeiro/24janeiro/fibra2E6.csv');
 model.result.export('data3').set('location', 'grid');
 model.result.export('data3').set('descr', {'Propagation constant'});
+
+model.func('an1').set('expr', 'n1*sqrt(1-2*Delta*((x^2+y^2)^(q/2)/b^q))');
+model.func.create('an2', 'Analytic');
+model.func('an2').model('mod1');
+model.func('an2').set('funcname', 'ntemp');
+
+model.param.set('tau', 'n0/T');
+model.param.set('T', '24');
+model.param.descr('T', 'temperatura');
+model.param.descr('tau', 'thermo optic coefficient');
+
+model.name('fibra_Ge_Si.mph');
+
+model.func('an1').name('n2');
+model.func('an2').name('ntemp');
+model.func('an2').set('expr', '()');
+model.func('an2').set('fununit', '1');
+model.func('an2').set('argunit', 'm');
+model.func('an2').setIndex('plotargs', 'y', 1, 0);
+model.func('an2').setIndex('plotargs', '-b/2', 0, 1);
+model.func('an2').setIndex('plotargs', 'b/2', 1, 1);
+model.func('an2').setIndex('plotargs', '-b/2', 0, 2);
+model.func('an2').setIndex('plotargs', 'b/2', 1, 2);
+model.func('an2').setIndex('plotargs', '-b/2', 1, 1);
+model.func('an2').setIndex('plotargs', 'b/2', 0, 2);
+model.func('an2').set('args', 'x,y');
+model.func('an2').set('expr', '(n2(x,y) + tau*(t - t0) )');
+
+model.param.remove('T');
+model.param.set('t', '24', 'temperatura');
+model.param.set('tau', 'n0/t');
+model.param.set('t0', '24');
+model.param.set('t', '1');
+model.param.set('tau', 'n0/t');
+
+model.func('an2').active(false);
+
+model.variable.create('var4');
+model.variable('var4').model('mod1');
+model.variable('var4').set('ntemp', '(ncore + tau*(t - t0) )');
+
+model.physics('emw2').feature('wee1').set('n', {'ntemp' '0' '0' '0' 'ntemp' '0' '0' '0' 'ntemp'});
+model.physics('emw2').feature('wee2').set('n', {'ntemp' '0' '0' '0' 'ntemp' '0' '0' '0' 'ntemp'});
+
+model.func.remove('an2');
+
+model.physics('emw').feature('wee2').set('DisplacementFieldModel', 1, 'LossTangent');
+model.physics('emw').feature('wee2').set('materialType', 1, 'from_mat');
+
+model.name('fibra_Ge_Si.mph');
+
+model.param.set('t', '24');
+
+model.name('fibra_Ge_Si.mph');
+
+model.physics('emw').feature('wee2').set('epsilonPrim_mat', 1, 'userdef');
+model.physics('emw').feature('wee2').set('epsilonPrim', {'n1' '0' '0' '0' 'n1' '0' '0' '0' 'n1'});
+model.physics('emw').feature('wee2').set('delta_mat', 1, 'userdef');
+model.physics('emw').feature('wee2').set('materialType', 1, 'nonSolid');
+model.physics('emw').feature('wee2').set('DisplacementFieldModel', 1, 'RefractiveIndex');
+
+model.sol('sol1').study('std1');
+model.sol('sol1').feature.remove('e1');
+model.sol('sol1').feature.remove('v1');
+model.sol('sol1').feature.remove('st1');
+model.sol('sol1').feature.create('st1', 'StudyStep');
+model.sol('sol1').feature('st1').set('study', 'std1');
+model.sol('sol1').feature('st1').set('studystep', 'mode');
+model.sol('sol1').feature.create('v1', 'Variables');
+model.sol('sol1').feature('v1').set('control', 'mode');
+model.sol('sol1').feature.create('e1', 'Eigenvalue');
+model.sol('sol1').feature('e1').set('shift', '1.45');
+model.sol('sol1').feature('e1').set('neigs', 6);
+model.sol('sol1').feature('e1').set('transform', 'effective_mode_index');
+model.sol('sol1').feature('e1').set('control', 'mode');
+model.sol('sol1').feature('e1').feature('aDef').set('complexfun', true);
+model.sol('sol1').attach('std1');
+model.sol('sol1').runAll;
+
+model.result('pg1').run;
+
+model.sol('sol2').study('std2');
+model.sol('sol2').feature.remove('e1');
+model.sol('sol2').feature.remove('v1');
+model.sol('sol2').feature.remove('st1');
+model.sol('sol2').feature.create('st1', 'StudyStep');
+model.sol('sol2').feature('st1').set('study', 'std2');
+model.sol('sol2').feature('st1').set('studystep', 'mode');
+model.sol('sol2').feature.create('v1', 'Variables');
+model.sol('sol2').feature('v1').set('control', 'mode');
+model.sol('sol2').feature.create('e1', 'Eigenvalue');
+model.sol('sol2').feature('e1').set('shift', '1.48');
+model.sol('sol2').feature('e1').set('neigs', 20);
+model.sol('sol2').feature('e1').set('transform', 'effective_mode_index');
+model.sol('sol2').feature('e1').set('control', 'mode');
+model.sol('sol2').feature('e1').feature('aDef').set('complexfun', true);
+model.sol('sol2').attach('std2');
+model.sol('sol2').runAll;
+
+model.result('pg2').run;
+model.result('pg2').run;
+model.result('pg3').run;
+model.result.dataset('join1').set('solnum', '6');
+model.result.dataset('join1').run;
+
+model.view.remove('view4');
+
+model.result('pg3').run;
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'20'});
+model.result('pg2').run;
+
+model.sol('sol1').clearSolution;
+model.sol('sol2').clearSolution;
+
+model.name('fibra_Ge_Si.mph');
+
+model.param.set('b_bkp', '30e-6[m]');
+model.param.set('b', '2.9965e-05[m]');
+
+model.geom('geom1').run('c2');
+model.geom('geom1').runAll;
+model.geom('geom1').run;
+model.geom('geom1').runAll;
+
+model.param.set('b', '3e-05');
+
+model.geom('geom1').runAll;
+model.geom('geom1').runAll;
+
+model.param.set('b', '3e-05[m]');
+
+model.geom('geom1').runAll;
+
+model.param.set('b', '3e-05');
+
+model.geom('geom1').runAll;
+
+model.param.set('metro', '1[m]');
+model.param.descr('metro', 'metro');
+
+model.geom('geom1').feature('c2').set('r', 'b*metro');
+model.geom('geom1').runAll;
+model.geom('geom1').run;
+
+model.param.set('tau', 'ncore/t');
+
+model.variable.create('var5');
+model.variable('var5').model('mod1');
+model.variable('var5').set('tau', 'ncore/t');
+
+model.param.remove('tau');
+model.param.set('t', '1');
+
+model.sol('sol2').study('std2');
+model.sol('sol2').feature.remove('e1');
+model.sol('sol2').feature.remove('v1');
+model.sol('sol2').feature.remove('st1');
+model.sol('sol2').feature.create('st1', 'StudyStep');
+model.sol('sol2').feature('st1').set('study', 'std2');
+model.sol('sol2').feature('st1').set('studystep', 'mode');
+model.sol('sol2').feature.create('v1', 'Variables');
+model.sol('sol2').feature('v1').set('control', 'mode');
+model.sol('sol2').feature.create('e1', 'Eigenvalue');
+model.sol('sol2').feature('e1').set('shift', '1.48');
+model.sol('sol2').feature('e1').set('neigs', 20);
+model.sol('sol2').feature('e1').set('transform', 'effective_mode_index');
+model.sol('sol2').feature('e1').set('control', 'mode');
+model.sol('sol2').feature('e1').feature('aDef').set('complexfun', true);
+model.sol('sol2').attach('std2');
+model.sol('sol2').runAll;
+
+model.result('pg2').run;
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'35'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'37'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'31'});
+model.result('pg2').run;
+
+model.variable('var5').active(false);
+
+model.param.set('tau', '13.5e-5');
+model.param.descr('tau', 'thermo-optic coefficient');
+
+model.sol('sol2').study('std2');
+model.sol('sol2').feature.remove('e1');
+model.sol('sol2').feature.remove('v1');
+model.sol('sol2').feature.remove('st1');
+model.sol('sol2').feature.create('st1', 'StudyStep');
+model.sol('sol2').feature('st1').set('study', 'std2');
+model.sol('sol2').feature('st1').set('studystep', 'mode');
+model.sol('sol2').feature.create('v1', 'Variables');
+model.sol('sol2').feature('v1').set('control', 'mode');
+model.sol('sol2').feature.create('e1', 'Eigenvalue');
+model.sol('sol2').feature('e1').set('shift', '1.48');
+model.sol('sol2').feature('e1').set('neigs', 20);
+model.sol('sol2').feature('e1').set('transform', 'effective_mode_index');
+model.sol('sol2').feature('e1').set('control', 'mode');
+model.sol('sol2').feature('e1').feature('aDef').set('complexfun', true);
+model.sol('sol2').attach('std2');
+model.sol('sol2').runAll;
+
+model.result('pg2').run;
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'20'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'19'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'17'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'15'});
+model.result('pg2').run;
+
+model.sol('sol1').clearSolution;
+model.sol('sol2').clearSolution;
 
 out = model;
