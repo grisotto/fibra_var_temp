@@ -1,0 +1,11 @@
+% Model:              fibra_Ge_Si.mph
+% Version:            COMSOL 4.3.2.152
+% Date:               Apr 27 2015, 17:00
+% Dimension:          2
+% Nodes:              2
+% Expressions:        1
+% Description:        
+% Length unit:        µm
+% x                       y                        ntemp @ Effective mode index=1
+-49.99999999999999        0                        1.4501460668624375
+0                         0                        1.473928835747145

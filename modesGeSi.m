@@ -16,7 +16,11 @@
 %temperatura
 
 %Consigo pegar os dados com esta versao, chamada de fibra_var_temp_2.
-%a
+
+%TO_DO
+%Colocar a equacao do b no modelo do COMSOL.
+%Pega o n_core e n_casca,
+%Metodo: gera um arquivo com os 2 valores e pega eles a partir do arquivo(trabalhoso). Ver no livelink user como pegar este valor diretamente com o mphglobal!
 
 clear all
 clc
@@ -40,19 +44,18 @@ disp('Abrindo o arquivo.')
 fid=fopen(filename1,'wt');
 
 
-%%fprintf(fid,'m\t');
-%%fprintf(fid,'neff1\t');
-%%fprintf(fid,'neff2\t');
-%%fprintf(fid,'neff3\t');
-%%fprintf(fid,'neff4\t');
-%%fprintf(fid,'neff5\t');
-%%fprintf(fid,'neff6\t');
-%%fprintf(fid,'neff7\t');
-%%fprintf(fid,'beta\n');
 
-fprintf(fid,'temperatura\t');
-fprintf(fid,'neff\t');
-fprintf(fid,'beta\n');
+
+fprintf(fid,'t (C)\t');
+fprintf(fid,'n(nucleo)\t');
+fprintf(fid,'n(casca)\t');
+fprintf(fid,'BETA1\t');
+fprintf(fid,'BETA2\t');
+fprintf(fid,'BETA3\t');
+fprintf(fid,'BETA4\t');
+fprintf(fid,'BETA5\t');
+fprintf(fid,'BETA6\t');
+fprintf(fid,'neff\n');
 
 
 model.hist.disable;% desativa o history para consumir menos memoria
@@ -275,29 +278,18 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
   
    disp('Gravando no arquivo os modos obtidos.')
     %Escreve no console os valores obtidos   
-   %% fprintf(fid,[num2str(neff1),' , ']);
-   %% fprintf(fid,[num2str(neff2),' , ']);
-   %% fprintf(fid,[num2str(neff3),' , ']);
-   %% fprintf(fid,[num2str(neff4),' , ']);
-   %% fprintf(fid,[num2str(neff5),' , ']);
-   %% fprintf(fid,[num2str(neff6),' \n']);
 
     fprintf(fid,[num2str(temperaturas(temp)),' , ']);
-    fprintf(fid,[num2str(neff1),' , ']);
-    fprintf(fid,[num2str(Ebeta1),' \n']);
-    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
+    fprintf(fid,[num2str(n_nucleo),' , ']);
+    fprintf(fid,[num2str(n_casca),' , ']);
     fprintf(fid,[num2str(neff2),' , ']);
-    fprintf(fid,[num2str(Ebeta2),' \n']);
-    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
+    fprintf(fid,[num2str(Ebeta2),' , ']);
     fprintf(fid,[num2str(neff3),' , ']);
-    fprintf(fid,[num2str(Ebeta3),' \n']);
-    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
+    fprintf(fid,[num2str(Ebeta3),' , ']);
     fprintf(fid,[num2str(neff4),' , ']);
-    fprintf(fid,[num2str(Ebeta4),' \n']);
-    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
+    fprintf(fid,[num2str(Ebeta4),' , ']);
     fprintf(fid,[num2str(neff5),' , ']);
-    fprintf(fid,[num2str(Ebeta5),' \n']);
-    fprintf(fid,[num2str(temperaturas(temp)),' , ']);
+    fprintf(fid,[num2str(Ebeta5),' , ']);
     fprintf(fid,[num2str(neff6),' , ']);
     fprintf(fid,[num2str(Ebeta6),' \n\n']);
 
