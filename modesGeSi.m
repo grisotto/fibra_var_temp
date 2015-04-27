@@ -16,6 +16,7 @@
 %temperatura
 
 %Consigo pegar os dados com esta versao, chamada de fibra_var_temp_2.
+%a
 
 clear all
 clc
