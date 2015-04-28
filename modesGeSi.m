@@ -18,9 +18,8 @@
 %Consigo pegar os dados com esta versao, chamada de fibra_var_temp_2.
 
 %TO_DO
-%Colocar a equacao do b no modelo do COMSOL.
-%Pega o n_core e n_casca,
-%Metodo: gera um arquivo com os 2 valores e pega eles a partir do arquivo(trabalhoso). Ver no livelink user como pegar este valor diretamente com o mphglobal!
+%Colocar a equacao do b no modelo do COMSOL. OK
+%Pega o n_core e n_casca, OK linha 275
 
 clear all
 clc
@@ -49,13 +48,19 @@ fid=fopen(filename1,'wt');
 fprintf(fid,'t (C)\t');
 fprintf(fid,'n(nucleo)\t');
 fprintf(fid,'n(casca)\t');
-fprintf(fid,'BETA1\t');
+fprintf(fid,'neff2\t');
+fprintf(fid,'neff3\t');
+fprintf(fid,'neff4\t');
+fprintf(fid,'neff5\t');
+fprintf(fid,'neff6\t');
+
+
 fprintf(fid,'BETA2\t');
 fprintf(fid,'BETA3\t');
 fprintf(fid,'BETA4\t');
 fprintf(fid,'BETA5\t');
-fprintf(fid,'BETA6\t');
-fprintf(fid,'neff\n');
+fprintf(fid,'BETA6\n');
+
 
 
 model.hist.disable;% desativa o history para consumir menos memoria
@@ -74,9 +79,9 @@ disp('Gerando a geometria.')
 
 
 %constante de interesse:
-alpha = 5e-5;
-b0 = 30e-6;
-t0 = 24;
+%alpha = 5e-5;
+%b0 = 30e-6;
+%t0 = 24;
 r0 = 4e-2;
 
 
@@ -150,17 +155,14 @@ r0 = 4e-2;
 %Como a temperatura so altera o indice da GRIN, entao a SMF ja esta
 %resolvida.
 
-temperaturas = [0,5,15,24];
+temperaturas = [0,5,10,15,20,24];
 limite = length(temperaturas);
 
 for temp = 1:limite
     disp([' temp = ',num2str(temperaturas(temp))]);
      model.param.set('t', temperaturas(temp));
     
-    b = b0 + alpha * b0 * (temperaturas(temp) - t0);
-    
-    
-    model.param.set('b', b);
+
     disp('Gerando a geometria para novo raio da GRIN.')
  model.geom('geom1').run;
  
@@ -192,12 +194,12 @@ model.sol('sol2').run() %Computa study2
                
       %verifica se o valor e real, se for, ele armazena no vetor
   neff2 = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',modosGRIN);
-      neff2
+      %neff2
       
       %modosGRIN - modos encontrados
       if (isreal(neff2) == 1 &&  neff2 > 1.46 ) 
           
-      disp([' Entrei: ',num2str(neff2)]);    
+      %disp([' Entrei: ',num2str(neff2)]);    
 neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',modosGRIN);
       
       cont = cont+1;
@@ -235,7 +237,7 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
           %caso tenha um numero igual a outro, eu defino este como sendo 0
           %estou considerando apenas 5 casas apos a virgula
           
-          neffGRIN(i)
+          neffGRIN(i);
           
           if neffGRIN(i) ~= 0
              if i ~= cont
@@ -272,8 +274,9 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
 
   neff6 = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',posicao(5));
   Ebeta6 = mphglobal(model,'emw2.beta','Dataset','dset2','solnum',posicao(5)); 
-   
-      
+  
+  n_nucleo = mphmax(model,'ntemp','surface','Dataset','dset2','selection',2, 'solnum',10);
+  n_casca = mphmax(model,'ntemp','surface','Dataset','dset2','selection',1, 'solnum',10);
   %% Gerando os dados
   
    disp('Gravando no arquivo os modos obtidos.')
@@ -282,24 +285,25 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
     fprintf(fid,[num2str(temperaturas(temp)),' , ']);
     fprintf(fid,[num2str(n_nucleo),' , ']);
     fprintf(fid,[num2str(n_casca),' , ']);
+    %gravando os neffs
     fprintf(fid,[num2str(neff2),' , ']);
-    fprintf(fid,[num2str(Ebeta2),' , ']);
     fprintf(fid,[num2str(neff3),' , ']);
-    fprintf(fid,[num2str(Ebeta3),' , ']);
     fprintf(fid,[num2str(neff4),' , ']);
-    fprintf(fid,[num2str(Ebeta4),' , ']);
     fprintf(fid,[num2str(neff5),' , ']);
-    fprintf(fid,[num2str(Ebeta5),' , ']);
     fprintf(fid,[num2str(neff6),' , ']);
-    fprintf(fid,[num2str(Ebeta6),' \n\n']);
+     %gravando os betas
+    fprintf(fid,[num2str(Ebeta2),' , ']);
+    fprintf(fid,[num2str(Ebeta3),' , ']);
+    fprintf(fid,[num2str(Ebeta4),' , ']);
+    fprintf(fid,[num2str(Ebeta5),' , ']);
+    fprintf(fid,[num2str(Ebeta6),' \n']);
 
 
    
-    disp('Os modos obtidos sao:')    
-    disp([' temp ',num2str(temperaturas(temp)),' neff1 ',num2str(neff1),...
-    ' neff2 ',num2str(neff2),' neff3 ',num2str(neff3),...
-    ' neff4 ',num2str(neff4),' neff5 ',num2str(neff5),...
-    ' neff6 ',num2str(neff6)])
+    disp('Dados obtidos:')    
+    disp([' temp ',num2str(temperaturas(temp)),' beta2 ',num2str(Ebeta2),...
+    ' beta3 ',num2str(Ebeta3),' beta4 ',num2str(Ebeta4),...
+    ' beta5 ',num2str(Ebeta5),' beta6 ',num2str(Ebeta6)])
 
       
     disp('Exportando o campo eletrico da fibra multimodo.')
