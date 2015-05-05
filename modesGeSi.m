@@ -96,7 +96,8 @@ r0 = 4e-2;
    modosSMF = 6;
     
   neff1 = mphglobal(model,'emw.neff','Dataset','dset1','solnum',modosSMF);
-
+    %neff2 = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',6);
+    %neff3 = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',3);
    
    
    disp('Indice efetivo da fibra monomodo.') 
@@ -147,7 +148,9 @@ r0 = 4e-2;
     csvwrite(SMFsemgrid,E1delta)
    
     
+       %waitbar(m/limite)
 
+%close(h)
 
 %% Calculo dos modos da fibra Ge
 %Como a temperatura so altera o indice da GRIN, entao a SMF ja esta
@@ -276,48 +279,6 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
   
   n_nucleo = mphmax(model,'ntemp','surface','Dataset','dset2','selection',2, 'solnum',10);
   n_casca = mphmax(model,'ntemp','surface','Dataset','dset2','selection',1, 'solnum',10);
-  
-  
-%Exportanto figuras a partir do COMSOL
-model.result('pg2').feature('surf1').set('looplevel', posicao(1));
-mphplot(model,'pg2');
-saveas(gcf(),[ 'E3_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close(figure(1))
-
-model.result('pg2').feature('surf1').set('looplevel', posicao(2));
-mphplot(model,'pg2');
-saveas(gcf(),[ 'E4_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close(figure(1))
-
-
-model.result('pg2').feature('surf1').set('looplevel', posicao(3));
-mphplot(model,'pg2');
-saveas(gcf(), ['E5_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close(figure(1))
-
-
-model.result('pg2').feature('surf1').set('looplevel', posicao(4));
-mphplot(model,'pg2');
-saveas(gcf(), ['E6_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close(figure(1))
-
-
-model.result('pg2').feature('surf1').set('looplevel', posicao(5));
-mphplot(model,'pg2');
-saveas(gcf(), ['E2_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close all
-
-
-
-
-
-
-
   %% Gerando os dados
   
    disp('Gravando no arquivo os modos obtidos.')

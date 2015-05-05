@@ -2,7 +2,7 @@ function out = model
 %
 % fibra_Ge_Si.m
 %
-% Model exported on May 5 2015, 19:11 by COMSOL 4.3.2.152.
+% Model exported on Apr 26 2015, 17:05 by COMSOL 4.3.2.152.
 
 import com.comsol.model.*
 import com.comsol.model.util.*
@@ -21,7 +21,7 @@ model.param.set('micron', '1.0[um]');
 model.param.set('omega0', '2*pi*c_const/lambda0');
 model.param.set('f0', 'c_const/lambda0', 'frequencia');
 model.param.set('a', '4[um]', 'raio do nucleo da SMF');
-model.param.set('b0', '30e-06', ['raio do n' native2unicode(hex2dec('00fa'), 'Cp1252') 'cleo da MMF']);
+model.param.set('b', '30e-6[m]', ['raio do n' native2unicode(hex2dec('00fa'), 'Cp1252') 'cleo da MMF']);
 model.param.set('c', '60e-6[m]');
 model.param.set('m', '0[1]');
 model.param.set('lambda0', '1.45e-6[m]');
@@ -40,20 +40,11 @@ model.param.set('GL3', '11.841931[um]');
 model.param.set('xmolG', '0.1934', 'GeO2 concentration for a Thorlabs GRIN fiber, see GRIN_Fleming.nb');
 model.param.set('xmolS', '0.033', 'GeO2 concentration for a SMF fiber.');
 model.param.set('wl', 'lambda0');
-model.param.set('t', '24', 'temperatura');
-model.param.set('t0', '24');
-model.param.set('b_bkp', '30e-6[m]');
-model.param.set('metro', '1[m]', 'metro');
-model.param.set('tau_c', '1.10e-5', 'thermo-optic coefficient');
-model.param.set('tau_n', '1.29e-5');
-model.param.set('alpha', '5e-5');
-model.param.set('b', 'b0 + alpha * b0 * (t- t0)');
 
 model.modelNode.create('mod1');
 
 model.func.create('an1', 'Analytic');
 model.func('an1').model('mod1');
-model.func('an1').name('n2');
 model.func('an1').set('fununit', '1');
 model.func('an1').set('plotargs', {'x' '-b/2' 'b/2'; 'y' '-b/2' 'b/2'});
 model.func('an1').set('funcname', 'n2');
@@ -68,7 +59,7 @@ model.geom('geom1').feature.create('c2', 'Circle');
 model.geom('geom1').feature.create('c3', 'Circle');
 model.geom('geom1').feature('c1').set('r', 'a');
 model.geom('geom1').feature('c1').set('pos', {'m*micron' '0'});
-model.geom('geom1').feature('c2').set('r', 'b*metro');
+model.geom('geom1').feature('c2').set('r', 'b');
 model.geom('geom1').feature('c3').set('r', 'c');
 model.geom('geom1').run;
 
@@ -78,21 +69,13 @@ model.variable('var1').set('ncore', 'sqrt(1+(SA1+xmol*(GA1-SA1))*wl^2/(wl^2-(SL1
 model.variable.create('var2');
 model.variable('var2').model('mod1');
 model.variable('var2').set('xmol', 'xmolG');
-model.variable('var2').set('tau', 'tau_n');
 model.variable('var2').selection.geom('geom1', 2);
 model.variable('var2').selection.set([2 3]);
 model.variable.create('var3');
 model.variable('var3').model('mod1');
 model.variable('var3').set('xmol', 'xmolS');
-model.variable('var3').set('tau', 'tau_c');
 model.variable('var3').selection.geom('geom1', 2);
 model.variable('var3').selection.set([1]);
-model.variable.create('var4');
-model.variable('var4').model('mod1');
-model.variable('var4').set('ntemp', '(ncore + tau*(t - t0) )');
-model.variable.create('var5');
-model.variable('var5').model('mod1');
-model.variable('var5').set('b', 'b0 + alpha * b0 * (t- t0)');
 
 model.view.create('view2', 2);
 model.view.create('view3', 2);
@@ -114,24 +97,22 @@ model.mesh('mesh1').feature('ref2').selection.geom('geom1', 2);
 model.mesh('mesh1').feature('ref2').selection.set([2]);
 
 model.result.table.create('tbl1', 'Table');
-model.result.table.create('evl2', 'Table');
 
 model.variable('var1').name('Variables 1a');
 model.variable('var2').name('Variables 2a');
 model.variable('var3').name('Variables 3a');
-model.variable('var5').active(false);
 
-model.view('view1').axis.set('xmin', '-67.77586364746094');
-model.view('view1').axis.set('ymin', '-41.29201889038086');
-model.view('view1').axis.set('xmax', '67.77586364746094');
-model.view('view1').axis.set('ymax', '41.29201889038086');
-model.view('view2').axis.set('xmin', '-54.55534744262695');
-model.view('view2').axis.set('ymin', '-29.76679229736328');
-model.view('view2').axis.set('xmax', '54.55534744262695');
-model.view('view2').axis.set('ymax', '29.76679229736328');
-model.view('view3').axis.set('xmin', '-108.33103942871094');
+model.view('view1').axis.set('xmin', '-126.01386260986328');
+model.view('view1').axis.set('ymin', '-76.29317474365234');
+model.view('view1').axis.set('xmax', '126.01386260986328');
+model.view('view1').axis.set('ymax', '76.29317474365234');
+model.view('view2').axis.set('xmin', '-28.14876937866211');
+model.view('view2').axis.set('ymin', '-17.04224395751953');
+model.view('view2').axis.set('xmax', '28.14876937866211');
+model.view('view2').axis.set('ymax', '17.04224395751953');
+model.view('view3').axis.set('xmin', '-112.5950698852539');
 model.view('view3').axis.set('ymin', '-66');
-model.view('view3').axis.set('xmax', '108.33103942871094');
+model.view('view3').axis.set('xmax', '112.5950698852539');
 model.view('view3').axis.set('ymax', '66');
 
 model.physics('emw').name('SMF Electromagnetic Waves, Frequency Domain');
@@ -140,28 +121,23 @@ model.physics('emw').feature('wee1').set('n_mat', 'userdef');
 model.physics('emw').feature('wee1').set('n', {'n0'; '0'; '0'; '0'; 'n0'; '0'; '0'; '0'; 'n0'});
 model.physics('emw').feature('wee1').set('ki_mat', 'userdef');
 model.physics('emw').feature('wee2').set('DisplacementFieldModel', 'RefractiveIndex');
-model.physics('emw').feature('wee2').set('epsilonPrim_mat', 'userdef');
-model.physics('emw').feature('wee2').set('epsilonPrim', {'n1'; '0'; '0'; '0'; 'n1'; '0'; '0'; '0'; 'n1'});
-model.physics('emw').feature('wee2').set('delta_mat', 'userdef');
 model.physics('emw').feature('wee2').set('n_mat', 'userdef');
 model.physics('emw').feature('wee2').set('n', {'n1'; '0'; '0'; '0'; 'n1'; '0'; '0'; '0'; 'n1'});
 model.physics('emw').feature('wee2').set('ki_mat', 'userdef');
 model.physics('emw2').name('GrIn Electromagnetic Waves, Frequency Domain 2');
 model.physics('emw2').feature('wee1').set('DisplacementFieldModel', 'RefractiveIndex');
 model.physics('emw2').feature('wee1').set('n_mat', 'userdef');
-model.physics('emw2').feature('wee1').set('n', {'ntemp'; '0'; '0'; '0'; 'ntemp'; '0'; '0'; '0'; 'ntemp'});
+model.physics('emw2').feature('wee1').set('n', {'ncore'; '0'; '0'; '0'; 'ncore'; '0'; '0'; '0'; 'ncore'});
 model.physics('emw2').feature('wee1').set('ki_mat', 'userdef');
 model.physics('emw2').feature('wee2').set('DisplacementFieldModel', 'RefractiveIndex');
 model.physics('emw2').feature('wee2').set('n_mat', 'userdef');
-model.physics('emw2').feature('wee2').set('n', {'ntemp'; '0'; '0'; '0'; 'ntemp'; '0'; '0'; '0'; 'ntemp'});
+model.physics('emw2').feature('wee2').set('n', {'ncore'; '0'; '0'; '0'; 'ncore'; '0'; '0'; '0'; 'ncore'});
 model.physics('emw2').feature('wee2').set('ki_mat', 'userdef');
 
 model.mesh('mesh1').feature('ref1').set('numrefine', {'2'});
 model.mesh('mesh1').run;
 
 model.result.table('tbl1').comments('Surface Integration 1 (data1(emw.normE)*data2(emw2.normE))');
-model.result.table('evl2').name('Evaluation 2D');
-model.result.table('evl2').comments('Interactive 2D values');
 
 model.study.create('std1');
 model.study('std1').feature.create('mode', 'ModeAnalysis');
@@ -207,16 +183,12 @@ model.result.numerical('int1').set('probetag', 'none');
 model.result.create('pg1', 'PlotGroup2D');
 model.result.create('pg2', 'PlotGroup2D');
 model.result.create('pg3', 'PlotGroup2D');
-model.result.create('pg4', 'PlotGroup2D');
 model.result('pg1').feature.create('surf1', 'Surface');
 model.result('pg2').feature.create('surf1', 'Surface');
 model.result('pg3').feature.create('surf1', 'Surface');
-model.result('pg4').feature.create('surf1', 'Surface');
 model.result.export.create('data1', 'Data');
 model.result.export.create('data2', 'Data');
 model.result.export.create('data3', 'Data');
-model.result.export.create('data4', 'Data');
-model.result.export.create('img1', 'Image2D');
 
 model.study('std1').feature('mode').set('modeFreq', 'f0');
 model.study('std1').feature('mode').set('activate', {'emw' 'on' 'emw2' 'off'});
@@ -231,23 +203,21 @@ model.sol('sol1').feature('st1').name('Compile Equations: Mode Analysis');
 model.sol('sol1').feature('st1').set('studystep', 'mode');
 model.sol('sol1').feature('v1').set('control', 'mode');
 model.sol('sol1').feature('v1').feature('mod1_E2').set('solvefor', false);
+model.sol('sol1').feature('e1').set('control', 'mode');
 model.sol('sol1').feature('e1').set('shift', '1.45');
 model.sol('sol1').feature('e1').set('transform', 'effective_mode_index');
-model.sol('sol1').feature('e1').set('control', 'mode');
 model.sol('sol1').feature('e1').feature('aDef').set('complexfun', true);
-model.sol('sol1').runAll;
 model.sol('sol2').attach('std2');
 model.sol('sol2').feature('st1').name('Compile Equations: Mode Analysis');
-model.sol('sol2').feature('st1').set('studystep', 'mode');
 model.sol('sol2').feature('st1').set('study', 'std2');
+model.sol('sol2').feature('st1').set('studystep', 'mode');
 model.sol('sol2').feature('v1').set('control', 'mode');
 model.sol('sol2').feature('v1').feature('mod1_E').set('solvefor', false);
-model.sol('sol2').feature('e1').set('shift', '1.48');
-model.sol('sol2').feature('e1').set('transform', 'effective_mode_index');
 model.sol('sol2').feature('e1').set('control', 'mode');
+model.sol('sol2').feature('e1').set('shift', '1.48');
 model.sol('sol2').feature('e1').set('neigs', '20');
+model.sol('sol2').feature('e1').set('transform', 'effective_mode_index');
 model.sol('sol2').feature('e1').feature('aDef').set('complexfun', true);
-model.sol('sol2').runAll;
 
 model.result.dataset('join1').set('method', 'explicit');
 model.result.dataset('join1').set('data2', 'dset2');
@@ -265,26 +235,18 @@ model.result('pg1').name('Electric Field (emw)');
 model.result('pg1').set('frametype', 'spatial');
 model.result('pg1').feature('surf1').name('Surface');
 model.result('pg1').feature('surf1').set('data', 'dset1');
-model.result('pg1').feature('surf1').set('looplevel', {'1'});
 model.result('pg2').set('data', 'dset2');
 model.result('pg2').feature('surf1').set('data', 'dset2');
 model.result('pg2').feature('surf1').set('descr', 'emw2.normE^2');
 model.result('pg2').feature('surf1').set('expr', 'emw2.normE^2');
-model.result('pg2').feature('surf1').set('looplevel', {'15'});
 model.result('pg2').feature('surf1').set('unit', 'm^2*kg^2/(s^6*A^2)');
 model.result('pg3').set('data', 'join1');
 model.result('pg3').set('solrepresentation', 'solnum');
-model.result('pg3').feature('surf1').set('data', 'dset2');
+model.result('pg3').feature('surf1').set('data', 'join1');
 model.result('pg3').feature('surf1').set('descr', 'data1(emw.normE)*data2(emw2.normE)');
 model.result('pg3').feature('surf1').set('expr', 'data1(emw.normE)*data2(emw2.normE)');
-model.result('pg3').feature('surf1').set('looplevel', {'1'});
-model.result('pg3').feature('surf1').set('unit', '');
-model.result('pg4').set('data', 'dset2');
-model.result('pg4').feature('surf1').set('data', 'dset2');
-model.result('pg4').feature('surf1').set('descr', '');
-model.result('pg4').feature('surf1').set('expr', 'ntemp');
-model.result('pg4').feature('surf1').set('looplevel', {'1'});
-model.result('pg4').feature('surf1').set('unit', '');
+model.result('pg3').feature('surf1').set('unit', 'm^2*kg^2/(s^6*A^2)');
+model.result('pg3').feature('surf1').set('solrepresentation', 'solnum');
 model.result.export('data1').set('expr', {'emw.normE'});
 model.result.export('data1').set('gridstruct', 'grid');
 model.result.export('data1').set('header', false);
@@ -317,35 +279,222 @@ model.result.export('data3').set('gridy2', 'range(-60,5,-45) range(-44,1,-41) ra
 model.result.export('data3').set('filename', '/Users/paulogomestl/Documents/Dropbox/Profissional/Jatai/2015/pesquisas/Simulacao/Grisoto/01janeiro/24janeiro/fibra2E6.csv');
 model.result.export('data3').set('location', 'grid');
 model.result.export('data3').set('descr', {'Propagation constant'});
-model.result.export('data4').set('data', 'dset2');
-model.result.export('data4').set('expr', {'ntemp'});
-model.result.export('data4').set('gridstruct', 'grid');
-model.result.export('data4').set('gridx2', 'range(-50,50,1)');
-model.result.export('data4').set('unit', {''});
-model.result.export('data4').set('gridy2', 'range(0,50,1)');
-model.result.export('data4').set('filename', '/mnt/dados/Comp/Projeto_optics/novafiber/abril2015/temperatura/teste1.txt');
-model.result.export('data4').set('location', 'grid');
-model.result.export('data4').set('descr', {''});
-model.result.export('img1').set('plotgroup', 'pg2');
-model.result.export('img1').set('pngfilename', '/mnt/dados/Comp/Projeto_optics/novafiber/abril2015/temperatura/teste_1.png');
-model.result.export('img1').set('view', 'view3');
-model.result.export('img1').set('unit', 'px');
-model.result.export('img1').set('height', '600');
-model.result.export('img1').set('width', '800');
-model.result.export('img1').set('lockratio', 'off');
-model.result.export('img1').set('resolution', '96');
-model.result.export('img1').set('size', 'manual');
-model.result.export('img1').set('antialias', 'on');
-model.result.export('img1').set('title', 'on');
-model.result.export('img1').set('legend', 'on');
-model.result.export('img1').set('logo', 'on');
-model.result.export('img1').set('options', 'off');
-model.result.export('img1').set('fontsize', '9');
-model.result.export('img1').set('customcolor', [1 1 1]);
-model.result.export('img1').set('background', 'color');
-model.result.export('img1').set('qualitylevel', '92');
-model.result.export('img1').set('qualityactive', 'off');
-model.result.export('img1').set('imagetype', 'png');
-model.result.export('img1').set('axes', 'on');
+
+model.func('an1').set('expr', 'n1*sqrt(1-2*Delta*((x^2+y^2)^(q/2)/b^q))');
+model.func.create('an2', 'Analytic');
+model.func('an2').model('mod1');
+model.func('an2').set('funcname', 'ntemp');
+
+model.param.set('tau', 'n0/T');
+model.param.set('T', '24');
+model.param.descr('T', 'temperatura');
+model.param.descr('tau', 'thermo optic coefficient');
+
+model.name('fibra_Ge_Si.mph');
+
+model.func('an1').name('n2');
+model.func('an2').name('ntemp');
+model.func('an2').set('expr', '()');
+model.func('an2').set('fununit', '1');
+model.func('an2').set('argunit', 'm');
+model.func('an2').setIndex('plotargs', 'y', 1, 0);
+model.func('an2').setIndex('plotargs', '-b/2', 0, 1);
+model.func('an2').setIndex('plotargs', 'b/2', 1, 1);
+model.func('an2').setIndex('plotargs', '-b/2', 0, 2);
+model.func('an2').setIndex('plotargs', 'b/2', 1, 2);
+model.func('an2').setIndex('plotargs', '-b/2', 1, 1);
+model.func('an2').setIndex('plotargs', 'b/2', 0, 2);
+model.func('an2').set('args', 'x,y');
+model.func('an2').set('expr', '(n2(x,y) + tau*(t - t0) )');
+
+model.param.remove('T');
+model.param.set('t', '24', 'temperatura');
+model.param.set('tau', 'n0/t');
+model.param.set('t0', '24');
+model.param.set('t', '1');
+model.param.set('tau', 'n0/t');
+
+model.func('an2').active(false);
+
+model.variable.create('var4');
+model.variable('var4').model('mod1');
+model.variable('var4').set('ntemp', '(ncore + tau*(t - t0) )');
+
+model.physics('emw2').feature('wee1').set('n', {'ntemp' '0' '0' '0' 'ntemp' '0' '0' '0' 'ntemp'});
+model.physics('emw2').feature('wee2').set('n', {'ntemp' '0' '0' '0' 'ntemp' '0' '0' '0' 'ntemp'});
+
+model.func.remove('an2');
+
+model.physics('emw').feature('wee2').set('DisplacementFieldModel', 1, 'LossTangent');
+model.physics('emw').feature('wee2').set('materialType', 1, 'from_mat');
+
+model.name('fibra_Ge_Si.mph');
+
+model.param.set('t', '24');
+
+model.name('fibra_Ge_Si.mph');
+
+model.physics('emw').feature('wee2').set('epsilonPrim_mat', 1, 'userdef');
+model.physics('emw').feature('wee2').set('epsilonPrim', {'n1' '0' '0' '0' 'n1' '0' '0' '0' 'n1'});
+model.physics('emw').feature('wee2').set('delta_mat', 1, 'userdef');
+model.physics('emw').feature('wee2').set('materialType', 1, 'nonSolid');
+model.physics('emw').feature('wee2').set('DisplacementFieldModel', 1, 'RefractiveIndex');
+
+model.sol('sol1').study('std1');
+model.sol('sol1').feature.remove('e1');
+model.sol('sol1').feature.remove('v1');
+model.sol('sol1').feature.remove('st1');
+model.sol('sol1').feature.create('st1', 'StudyStep');
+model.sol('sol1').feature('st1').set('study', 'std1');
+model.sol('sol1').feature('st1').set('studystep', 'mode');
+model.sol('sol1').feature.create('v1', 'Variables');
+model.sol('sol1').feature('v1').set('control', 'mode');
+model.sol('sol1').feature.create('e1', 'Eigenvalue');
+model.sol('sol1').feature('e1').set('shift', '1.45');
+model.sol('sol1').feature('e1').set('neigs', 6);
+model.sol('sol1').feature('e1').set('transform', 'effective_mode_index');
+model.sol('sol1').feature('e1').set('control', 'mode');
+model.sol('sol1').feature('e1').feature('aDef').set('complexfun', true);
+model.sol('sol1').attach('std1');
+model.sol('sol1').runAll;
+
+model.result('pg1').run;
+
+model.sol('sol2').study('std2');
+model.sol('sol2').feature.remove('e1');
+model.sol('sol2').feature.remove('v1');
+model.sol('sol2').feature.remove('st1');
+model.sol('sol2').feature.create('st1', 'StudyStep');
+model.sol('sol2').feature('st1').set('study', 'std2');
+model.sol('sol2').feature('st1').set('studystep', 'mode');
+model.sol('sol2').feature.create('v1', 'Variables');
+model.sol('sol2').feature('v1').set('control', 'mode');
+model.sol('sol2').feature.create('e1', 'Eigenvalue');
+model.sol('sol2').feature('e1').set('shift', '1.48');
+model.sol('sol2').feature('e1').set('neigs', 20);
+model.sol('sol2').feature('e1').set('transform', 'effective_mode_index');
+model.sol('sol2').feature('e1').set('control', 'mode');
+model.sol('sol2').feature('e1').feature('aDef').set('complexfun', true);
+model.sol('sol2').attach('std2');
+model.sol('sol2').runAll;
+
+model.result('pg2').run;
+model.result('pg2').run;
+model.result('pg3').run;
+model.result.dataset('join1').set('solnum', '6');
+model.result.dataset('join1').run;
+
+model.view.remove('view4');
+
+model.result('pg3').run;
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'20'});
+model.result('pg2').run;
+
+model.sol('sol1').clearSolution;
+model.sol('sol2').clearSolution;
+
+model.name('fibra_Ge_Si.mph');
+
+model.param.set('b_bkp', '30e-6[m]');
+model.param.set('b', '2.9965e-05[m]');
+
+model.geom('geom1').run('c2');
+model.geom('geom1').runAll;
+model.geom('geom1').run;
+model.geom('geom1').runAll;
+
+model.param.set('b', '3e-05');
+
+model.geom('geom1').runAll;
+model.geom('geom1').runAll;
+
+model.param.set('b', '3e-05[m]');
+
+model.geom('geom1').runAll;
+
+model.param.set('b', '3e-05');
+
+model.geom('geom1').runAll;
+
+model.param.set('metro', '1[m]');
+model.param.descr('metro', 'metro');
+
+model.geom('geom1').feature('c2').set('r', 'b*metro');
+model.geom('geom1').runAll;
+model.geom('geom1').run;
+
+model.param.set('tau', 'ncore/t');
+
+model.variable.create('var5');
+model.variable('var5').model('mod1');
+model.variable('var5').set('tau', 'ncore/t');
+
+model.param.remove('tau');
+model.param.set('t', '1');
+
+model.sol('sol2').study('std2');
+model.sol('sol2').feature.remove('e1');
+model.sol('sol2').feature.remove('v1');
+model.sol('sol2').feature.remove('st1');
+model.sol('sol2').feature.create('st1', 'StudyStep');
+model.sol('sol2').feature('st1').set('study', 'std2');
+model.sol('sol2').feature('st1').set('studystep', 'mode');
+model.sol('sol2').feature.create('v1', 'Variables');
+model.sol('sol2').feature('v1').set('control', 'mode');
+model.sol('sol2').feature.create('e1', 'Eigenvalue');
+model.sol('sol2').feature('e1').set('shift', '1.48');
+model.sol('sol2').feature('e1').set('neigs', 20);
+model.sol('sol2').feature('e1').set('transform', 'effective_mode_index');
+model.sol('sol2').feature('e1').set('control', 'mode');
+model.sol('sol2').feature('e1').feature('aDef').set('complexfun', true);
+model.sol('sol2').attach('std2');
+model.sol('sol2').runAll;
+
+model.result('pg2').run;
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'35'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'37'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'31'});
+model.result('pg2').run;
+
+model.variable('var5').active(false);
+
+model.param.set('tau', '13.5e-5');
+model.param.descr('tau', 'thermo-optic coefficient');
+
+model.sol('sol2').study('std2');
+model.sol('sol2').feature.remove('e1');
+model.sol('sol2').feature.remove('v1');
+model.sol('sol2').feature.remove('st1');
+model.sol('sol2').feature.create('st1', 'StudyStep');
+model.sol('sol2').feature('st1').set('study', 'std2');
+model.sol('sol2').feature('st1').set('studystep', 'mode');
+model.sol('sol2').feature.create('v1', 'Variables');
+model.sol('sol2').feature('v1').set('control', 'mode');
+model.sol('sol2').feature.create('e1', 'Eigenvalue');
+model.sol('sol2').feature('e1').set('shift', '1.48');
+model.sol('sol2').feature('e1').set('neigs', 20);
+model.sol('sol2').feature('e1').set('transform', 'effective_mode_index');
+model.sol('sol2').feature('e1').set('control', 'mode');
+model.sol('sol2').feature('e1').feature('aDef').set('complexfun', true);
+model.sol('sol2').attach('std2');
+model.sol('sol2').runAll;
+
+model.result('pg2').run;
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'20'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'19'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'17'});
+model.result('pg2').run;
+model.result('pg2').feature('surf1').set('looplevel', {'15'});
+model.result('pg2').run;
+
+model.sol('sol1').clearSolution;
+model.sol('sol2').clearSolution;
 
 out = model;
