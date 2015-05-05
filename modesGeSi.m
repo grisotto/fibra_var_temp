@@ -19,7 +19,8 @@
 
 %TO_DO
 %Colocar a equacao do b no modelo do COMSOL. OK
-%Pega o n_core e n_casca, OK linha 275
+%Pega o n_core e n_casca, OK linha 275 OK
+%Calcular os T no R apenas em deltaY, fazer meshgrid
 
 clear all
 clc
@@ -155,7 +156,8 @@ r0 = 4e-2;
 %Como a temperatura so altera o indice da GRIN, entao a SMF ja esta
 %resolvida.
 
-temperaturas = [0,5,10,15,20,24];
+
+temperaturas = [0,10,20,24,30];
 limite = length(temperaturas);
 
 for temp = 1:limite
