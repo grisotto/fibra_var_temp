@@ -279,45 +279,49 @@ neffGRIN(modosGRIN) = mphglobal(model,'emw2.neff','Dataset','dset2','solnum',mod
   
   n_nucleo = mphmax(model,'ntemp','surface','Dataset','dset2','selection',2, 'solnum',10);
   n_casca = mphmax(model,'ntemp','surface','Dataset','dset2','selection',1, 'solnum',10);
-  
+close ALL  
   %Exportanto figuras a partir do COMSOL
+figure
 model.result('pg2').feature('surf1').set('looplevel', posicao(1));
 mphplot(model,'pg2');
-pause(0.5)
+pause(1)
 saveas(gcf(),[ 'E3_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close(figure(1))
+%pause(0.5)
+%close(figure(1))
 
+figure
 model.result('pg2').feature('surf1').set('looplevel', posicao(2));
 mphplot(model,'pg2');
-pause(0.5)
+pause(1)
 saveas(gcf(),[ 'E4_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close(figure(1))
+%pause(0.5)
+%close(figure(1))
 
 
 model.result('pg2').feature('surf1').set('looplevel', posicao(3));
 mphplot(model,'pg2');
-pause(0.5)
+pause(1)
 saveas(gcf(), ['E5_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close(figure(1))
 
+%pause(0.5)
+%close(figure(1))
 
+figure
 model.result('pg2').feature('surf1').set('looplevel', posicao(4));
 mphplot(model,'pg2');
-pause(0.5)
+pause(1)
 saveas(gcf(), ['E6_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close(figure(1))
+%pause(0.5)
+%close(figure(1))
 
-
+figure
 model.result('pg2').feature('surf1').set('looplevel', posicao(5));
 mphplot(model,'pg2');
-pause(0.5)
+pause(1)
 saveas(gcf(), ['E2_',num2str(temperaturas(temp)),'.png'], 'png')
-pause(0.5)
-close all
+%pause(0.5)
+
+close ALL
   
   %% Gerando os dados
   
