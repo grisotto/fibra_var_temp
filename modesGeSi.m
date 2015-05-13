@@ -368,9 +368,9 @@ format long
     model.result.export('data2').set('location', 'grid');
     model.result.export('data2').set('gridstruct', 'grid');
     model.result.export('data2').set('gridx2',...
- 'range(-60,5,-45) range(-44,0.5,44) range(45,5,60)');
+ 'range(-60,5,-45) range(-44,0.2,44) range(45,5,60)');
     model.result.export('data2').set('gridy2',...
- 'range(-60,5,-45) range(-44,0.5,44) range(45,5,60)');
+ 'range(-60,5,-45) range(-44,0.2,44) range(45,5,60)');
     model.result.export('data2').set('fullprec', 'off');
     model.result.export('data2').set('header', 'off');
     model.result.export('data2').run;
